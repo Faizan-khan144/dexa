@@ -1,23 +1,24 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowRight, ArrowUpRight, Sparkles, Star } from 'lucide-react'
+import { ArrowRight, ArrowUpRight, Search, Sparkles, Star } from 'lucide-react'
+import CountUp from '../components/CountUp'
 import Marquee from '../components/Marquee'
 import PokemonCard from '../components/PokemonCard'
 import RarityBadge from '../components/RarityBadge'
 import Reveal from '../components/Reveal'
 import SearchDock from '../components/SearchDock'
-import TypeBadge from '../components/TypeBadge'
 import {
   GENERATIONS,
-  LEGENDARY_IDS,
-  MYTHICAL_IDS,
   TYPE_META,
   TYPE_ORDER,
   artworkUrl,
   formatDexId,
   formatName,
+  getIndex,
   getMany,
+  spriteUrl,
   type PokemonDetail,
+  type PokemonEntry,
 } from '../lib/pokedex'
 
 const STARTERS = [
@@ -28,6 +29,39 @@ const STARTERS = [
 ]
 
 const FEATURED_IDS = [6, 448, 133, 150, 384, 94]
+
+const LEGENDARY_SHOWCASE = [150, 249, 384, 483, 888, 1008]
+
+const GEN_ICONS: Record<number, number> = {
+  1: 25,
+  2: 155,
+  3: 252,
+  4: 387,
+  5: 495,
+  6: 650,
+  7: 722,
+  8: 813,
+  9: 906,
+}
+
+const SECOND_MARQUEE = [
+  'Bulbasaur',
+  'Squirtle',
+  'Jigglypuff',
+  'Machamp',
+  'Alakazam',
+  'Arcanine',
+  'Snorlax',
+  'Mewtwo',
+  'Scizor',
+  'Blissey',
+  'Metagross',
+  'Infernape',
+  'Zoroark',
+  'Aegislash',
+  'Toxtricity',
+  'Annihilape',
+]
 
 const ROLLING_NAMES = [
   'Gengar',
@@ -50,7 +84,9 @@ const ROLLING_NAMES = [
 
 export default function Landing() {
   const [featured, setFeatured] = useState<PokemonDetail[]>([])
-  const [active, setActive] = useState(0)
+  const [legendaries, setLegendaries] = useState<PokemonDetail[]>([])
+  const [all, setAll] = useState<PokemonEntry[]>([])
+  const [scrollOffset, setScrollOffset] = useState(0)
 
   useEffect(() => {
     document.title = 'Dexa — every Pokémon, one clean dex'
@@ -60,65 +96,91 @@ export default function Landing() {
         if (alive) setFeatured(list)
       })
       .catch(() => undefined)
+    getMany(LEGENDARY_SHOWCASE)
+      .then((list) => {
+        if (alive) setLegendaries(list)
+      })
+      .catch(() => undefined)
+    getIndex()
+      .then((list) => {
+        if (alive) setAll(list)
+      })
+      .catch(() => undefined)
     return () => {
       alive = false
     }
   }, [])
 
   useEffect(() => {
-    if (featured.length < 2) return
-    const timer = window.setInterval(() => {
-      setActive((value) => (value + 1) % featured.length)
-    }, 4800)
-    return () => window.clearInterval(timer)
-  }, [featured.length])
+    const onScroll = () => setScrollOffset(Math.min(window.scrollY, 700))
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
 
-  const hero = featured[active]
-  const heroPrimary = hero?.types[0]?.type.name ?? 'electric'
-  const heroMeta = TYPE_META[heroPrimary] ?? TYPE_META.normal
-  const specialCount = LEGENDARY_IDS.size + MYTHICAL_IDS.size
+  const preview = featured[0]
+  const previewStats = preview ? preview.stats.slice(0, 3) : []
+  const previewTotal = previewStats.reduce((total, stat) => total + stat.base_stat, 0)
 
   return (
     <div className="pop-in">
       <section className="wrap grid gap-10 pb-12 pt-10 lg:grid-cols-[1.08fr_0.92fr] lg:items-center lg:pb-16 lg:pt-16">
-        <div>
+        <div className="max-w-xl">
           <Reveal>
-            <div className="kicker">Pokédex · 1025 species</div>
-            <h1 className="mt-4 font-display text-[2.9rem] font-extrabold leading-[0.96] tracking-[-0.045em] sm:text-[4.1rem]">
-              Every Pokémon,
+            <div className="inline-flex items-center gap-2 rounded-full border border-line bg-surface/70 px-3 py-1.5">
+              <span className="relative flex h-1.5 w-1.5">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-60" />
+                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-accent" />
+              </span>
+              <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-muted">
+                All 1025 species · no account
+              </span>
+            </div>
+            <h1 className="mt-5 font-display text-[3rem] font-extrabold leading-[0.94] tracking-[-0.05em] sm:text-[4.35rem]">
+              Every Pokémon.
               <br />
-              one clean <span className="text-accent">dex.</span>
+              One quiet <span className="text-gradient">dex.</span>
             </h1>
             <p className="mt-5 max-w-lg text-[15.5px] leading-relaxed text-muted">
-              Search all nine generations in a single keystroke. Types, stats, evolution lines, cries, and a shelf for
-              the ones you keep coming back to.
+              Types, stats, evolution lines and cries for every species — indexed locally, searchable by name or
+              number, and ready before the conversation moves on.
             </p>
           </Reveal>
 
-          <Reveal delay={110}>
-            <div className="mt-7 max-w-xl">
+          <Reveal delay={100}>
+            <div className="mt-7">
               <SearchDock size="hero" placeholder="Try “gengar”, “151”, “dragapult”…" />
-              <div className="mt-3 flex flex-wrap items-center gap-2">
-                <span className="mono text-faint">Popular</span>
-                {['pikachu', 'gengar', 'lucario', 'umbreon'].map((name) => (
-                  <Link key={name} to={`/dex?q=${name}`} className="chip">
-                    {formatName(name)}
-                  </Link>
-                ))}
-              </div>
+            </div>
+            <div className="mt-3 flex flex-wrap items-center gap-2">
+              <span className="mono text-faint">Popular</span>
+              {['pikachu', 'gengar', 'lucario', 'umbreon'].map((name) => (
+                <Link key={name} to={`/dex?q=${name}`} className="chip">
+                  {formatName(name)}
+                </Link>
+              ))}
             </div>
           </Reveal>
 
-          <Reveal delay={200}>
-            <div className="mt-8 grid max-w-xl grid-cols-2 gap-3 sm:grid-cols-4">
+          <Reveal delay={180}>
+            <div className="mt-7 flex flex-wrap items-center gap-3">
+              <Link to="/dex" className="btn-accent">
+                Open the dex <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
+              <Link to="/random" className="btn-quiet">
+                Surprise me
+              </Link>
+            </div>
+            <p className="mono mt-4 text-faint">Free · fan-made · data from PokéAPI</p>
+            <div className="mt-7 grid max-w-md grid-cols-3 gap-3 border-t border-line pt-5">
               {[
-                { value: '1025', label: 'species' },
-                { value: '18', label: 'types' },
-                { value: '9', label: 'generations' },
-                { value: String(specialCount), label: 'legendary + mythical' },
+                { value: 1025, label: 'species' },
+                { value: 18, label: 'types' },
+                { value: 9, label: 'generations' },
               ].map((stat) => (
-                <div key={stat.label} className="rounded-2xl border border-line bg-surface/70 px-3 py-3">
-                  <div className="font-display text-2xl font-extrabold tracking-tight">{stat.value}</div>
+                <div key={stat.label}>
+                  <div className="font-display text-xl font-extrabold tracking-tight">
+                    <CountUp value={stat.value} />
+                  </div>
                   <div className="mono mt-0.5 text-[9px] uppercase tracking-[0.1em] text-faint">{stat.label}</div>
                 </div>
               ))}
@@ -127,80 +189,122 @@ export default function Landing() {
         </div>
 
         <Reveal variant="right" delay={140}>
-          <div className="relative">
-            <div className="absolute -inset-6 rounded-[3rem] bg-gradient-to-br from-sun/20 via-transparent to-accent/10 blur-2xl" />
-            <div
-              className="card pokeball-ring relative overflow-hidden px-6 pb-6 pt-5"
-              style={{
-                background: `radial-gradient(120% 100% at 50% 0%, ${heroMeta.a}22, #fffdf8 62%)`,
-              }}
-            >
-              <div className="flex items-start justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="mono text-faint">Now showing</span>
-                  <span className="h-1 w-1 rounded-full bg-accent" />
+          <div className="relative" style={{ transform: `translateY(${-scrollOffset * 0.02}px)` }}>
+            <div className="absolute -inset-6 rounded-[3rem] bg-gradient-to-br from-accent/25 via-transparent to-sun/10 blur-2xl" />
+            <div className="card relative overflow-hidden">
+              <div className="flex items-center gap-2 border-b border-line bg-surface2/60 px-4 py-2.5">
+                <span className="flex gap-1.5">
+                  <span className="h-2 w-2 rounded-full bg-accent/70" />
+                  <span className="h-2 w-2 rounded-full bg-sun/60" />
+                  <span className="h-2 w-2 rounded-full bg-line-strong" />
+                </span>
+                <span className="mx-auto flex items-center gap-1.5 rounded-full border border-line bg-bg/60 px-3 py-1 font-mono text-[9px] text-faint">
+                  dexa.app/dex
+                </span>
+                <span className="mono text-[9px] text-faint">live</span>
+              </div>
+
+              <div className="p-4">
+                <div className="flex items-center gap-2 rounded-full border border-line-strong bg-bg/60 px-3 py-2.5">
+                  <Search className="h-3.5 w-3.5 text-faint" />
+                  <span className="flex-1 text-[12px] text-faint">Search 1025 species…</span>
+                  <kbd className="rounded border border-line bg-surface px-1.5 py-0.5 font-mono text-[9px] text-faint">
+                    /
+                  </kbd>
                 </div>
-                <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-faint">
-                  {hero ? formatDexId(hero.id) : '#—'}
-                </span>
-              </div>
 
-              <div className="relative mt-2 grid h-[300px] place-items-center sm:h-[340px]">
-                <span className="dex-number pointer-events-none absolute select-none text-[9rem] sm:text-[12rem]">
-                  {hero ? String(hero.id).padStart(3, '0') : '000'}
-                </span>
-                {hero ? (
-                  <Link to={`/pokemon/${hero.id}`} className="relative">
-                    <img
-                      key={hero.id}
-                      src={artworkUrl(hero.id)}
-                      alt={formatName(hero.name)}
-                      className="sprite-float h-[240px] w-[240px] object-contain drop-shadow-[0_30px_30px_rgba(20,18,26,0.25)] sm:h-[280px] sm:w-[280px]"
-                    />
-                  </Link>
-                ) : (
-                  <div className="skeleton relative h-52 w-52 rounded-full" />
-                )}
-              </div>
+                <div className="mt-2.5 flex flex-wrap gap-1.5">
+                  {['fire', 'water', 'grass', 'psychic'].map((type, index) => (
+                    <span key={type} className="chip" data-active={index === 0}>
+                      {type}
+                    </span>
+                  ))}
+                  <span className="chip">+14</span>
+                </div>
 
-              <div className="relative flex items-end justify-between gap-3">
-                <div>
-                  <h2 className="font-display text-2xl font-extrabold tracking-tight">
-                    {hero ? formatName(hero.name) : 'Loading…'}
-                  </h2>
-                  <div className="mt-1.5 flex flex-wrap gap-1.5">
-                    {hero?.types.map((entry) => (
-                      <TypeBadge key={entry.type.name} type={entry.type.name} />
+                <div className="mt-3 grid grid-cols-3 gap-2">
+                  {featured.length > 0
+                    ? featured.slice(0, 3).map((item) => (
+                        <Link
+                          key={item.id}
+                          to={`/pokemon/${item.id}`}
+                          className="group rounded-xl border border-line bg-bg/40 p-2 text-center transition-colors hover:border-accent/50"
+                        >
+                          <img
+                            src={artworkUrl(item.id)}
+                            alt={formatName(item.name)}
+                            className="mx-auto h-[72px] w-[72px] object-contain drop-shadow-[0_10px_12px_rgba(0,0,0,0.5)] transition-transform group-hover:-translate-y-1"
+                          />
+                          <div className="mt-1 truncate font-display text-[12px] font-bold">
+                            {formatName(item.name)}
+                          </div>
+                          <div className="mono text-[8px] text-faint">{formatDexId(item.id)}</div>
+                        </Link>
+                      ))
+                    : Array.from({ length: 3 }).map((_, index) => (
+                        <div key={index} className="skeleton h-[118px] rounded-xl" />
+                      ))}
+                </div>
+
+                <div className="mt-3 rounded-xl border border-line bg-bg/40 p-3">
+                  <div className="flex items-center justify-between">
+                    <span className="mono text-[9px] uppercase tracking-[0.12em] text-faint">Base stats</span>
+                    <span className="mono text-[9px] text-faint">total {previewTotal || '—'}</span>
+                  </div>
+                  <div className="mt-2.5 space-y-1.5">
+                    {(previewStats.length > 0 ? previewStats : [{ base_stat: 60 }]).map((stat, index) => (
+                      <div key={index} className="h-1.5 overflow-hidden rounded-full bg-surface2">
+                        <div
+                          className="stat-fill"
+                          data-tone={index === 0 ? 'high' : 'mid'}
+                          style={{ width: `${Math.min(100, (stat.base_stat / 180) * 100)}%` }}
+                        />
+                      </div>
                     ))}
                   </div>
                 </div>
-                {hero && (
-                  <Link
-                    to={`/pokemon/${hero.id}`}
-                    className="grid h-10 w-10 place-items-center rounded-full border border-line-strong bg-surface text-ink transition-colors hover:border-accent hover:text-accent"
-                    aria-label={`Open ${formatName(hero.name)}`}
-                  >
-                    <ArrowUpRight className="h-4 w-4" />
-                  </Link>
-                )}
               </div>
 
-              <div className="mt-4 flex gap-1.5">
-                {featured.map((item, index) => (
-                  <button
-                    key={item.id}
-                    type="button"
-                    onClick={() => setActive(index)}
-                    className={`h-1 flex-1 rounded-full transition-colors ${
-                      index === active ? 'bg-ink' : 'bg-line-strong/60 hover:bg-line-strong'
-                    }`}
-                    aria-label={`Show ${formatName(item.name)}`}
-                  />
-                ))}
+              <div className="flex items-center justify-between border-t border-line px-4 py-2.5">
+                <span className="mono text-[9px] text-faint">1025 species · 18 types · 9 generations</span>
+                <span className="mono flex items-center gap-1 text-[9px] text-faint">
+                  <span className="h-1 w-1 rounded-full bg-accent" /> live
+                </span>
+              </div>
+            </div>
+
+            <div className="absolute -left-4 top-[38%] hidden sm:block">
+              <div className="card !rounded-2xl px-3 py-2 shadow-[0_20px_40px_-24px_rgba(0,0,0,0.9)]">
+                <div className="mono text-[8px] uppercase tracking-[0.12em] text-faint">Rarity</div>
+                <div className="mt-1">
+                  <RarityBadge tier="Legendary" />
+                </div>
+              </div>
+            </div>
+
+            <div className="absolute -right-3 bottom-24 hidden sm:block">
+              <div className="card !rounded-2xl px-3 py-2 shadow-[0_20px_40px_-24px_rgba(0,0,0,0.9)]">
+                <div className="mono text-[8px] uppercase tracking-[0.12em] text-faint">Indexed</div>
+                <div className="font-display text-lg font-extrabold leading-tight">
+                  <CountUp value={1025} />
+                </div>
               </div>
             </div>
           </div>
         </Reveal>
+      </section>
+
+      <section className="border-y border-line bg-surface/40">
+        <div className="wrap flex flex-wrap items-center justify-between gap-3 py-4">
+          <span className="mono text-faint">Built on the open PokéAPI</span>
+          <div className="flex flex-wrap items-center gap-1.5">
+            {['PokéAPI', 'Official artwork', 'Cries', 'React 19', 'Vite'].map((item) => (
+              <span key={item} className="chip">
+                {item}
+              </span>
+            ))}
+          </div>
+        </div>
       </section>
 
       <Marquee items={ROLLING_NAMES} />
@@ -259,6 +363,113 @@ export default function Landing() {
               )
             })}
           </div>
+        </div>
+      </section>
+
+      <section className="wrap py-14">
+        <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <div className="kicker">The ones in the stories</div>
+            <h2 className="mt-3 font-display text-[2rem] font-extrabold tracking-tight">Legendary company</h2>
+          </div>
+          <Link to="/dex?special=1" className="btn-quiet">
+            All legendary & mythical <ArrowRight className="h-3.5 w-3.5" />
+          </Link>
+        </div>
+        <div className="dex-grid">
+          {legendaries.length === 0
+            ? Array.from({ length: 6 }).map((_, index) => (
+                <div key={index} className="card overflow-hidden">
+                  <div className="skeleton h-[176px] rounded-none" />
+                  <div className="space-y-2 p-4">
+                    <div className="skeleton h-4 w-2/3" />
+                    <div className="skeleton h-3 w-1/3" />
+                  </div>
+                </div>
+              ))
+            : legendaries.map((item, index) => (
+                <Reveal key={item.id} delay={Math.min(index * 60, 240)}>
+                  <PokemonCard
+                    id={item.id}
+                    name={item.name}
+                    types={item.types.map((entry) => entry.type.name)}
+                  />
+                </Reveal>
+              ))}
+        </div>
+      </section>
+
+      <section className="border-y border-line bg-surface/50">
+        <div className="wrap py-14">
+          <div className="mb-6">
+            <div className="kicker">Nine regions</div>
+            <h2 className="mt-3 font-display text-[2rem] font-extrabold tracking-tight">Generation atlas</h2>
+            <p className="mt-2 max-w-xl text-[14px] leading-relaxed text-muted">
+              From Kanto's 151 to Paldea's 1025 — jump straight into a region and walk the dex from its first entry.
+            </p>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {GENERATIONS.map((generation, index) => (
+              <Reveal key={generation.id} delay={Math.min(index * 45, 300)}>
+                <Link to={`/dex?gen=${generation.id}`} className="card card-hover group flex items-center gap-4 p-4">
+                  <span className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl border border-line bg-bg/60">
+                    <img
+                      src={spriteUrl(GEN_ICONS[generation.id] ?? 25)}
+                      alt=""
+                      loading="lazy"
+                      className="h-10 w-10 object-contain [image-rendering:pixelated] transition-transform duration-300 group-hover:-translate-y-1 group-hover:scale-110"
+                    />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <div className="mono text-faint">Generation {generation.label}</div>
+                    <div className="font-display text-lg font-extrabold leading-tight">{generation.region}</div>
+                    <div className="mono text-faint">
+                      {formatDexId(generation.from)} – {formatDexId(generation.to)}
+                    </div>
+                  </div>
+                  <ArrowUpRight className="h-4 w-4 shrink-0 text-faint transition-all group-hover:-translate-y-0.5 group-hover:text-accent" />
+                </Link>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <Marquee items={SECOND_MARQUEE} reverse />
+
+      <section className="wrap py-14">
+        <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <div className="kicker">The full wall</div>
+            <h2 className="mt-3 font-display text-[2rem] font-extrabold tracking-tight">All 1025. No exceptions.</h2>
+            <p className="mt-2 max-w-xl text-[14px] leading-relaxed text-muted">
+              Every sprite, every dex number — the whole archive on one wall. Hover for the number, click for the
+              dossier.
+            </p>
+          </div>
+          <span className="mono text-faint">{all.length > 0 ? `${all.length} species` : 'indexing…'}</span>
+        </div>
+        <div className="grid grid-cols-8 gap-1 sm:grid-cols-12 md:grid-cols-[repeat(16,minmax(0,1fr))]">
+          {all.length === 0
+            ? Array.from({ length: 64 }).map((_, index) => <div key={index} className="skeleton aspect-square" />)
+            : all.map((entry) => (
+                <Link
+                  key={entry.id}
+                  to={`/pokemon/${entry.id}`}
+                  title={`${formatDexId(entry.id)} ${formatName(entry.name)}`}
+                  className="group relative grid aspect-square place-items-center rounded-lg border border-transparent bg-bg/50 transition-all duration-200 hover:-translate-y-1 hover:border-accent/50 hover:bg-accent/10"
+                >
+                  <img
+                    src={spriteUrl(entry.id)}
+                    alt={formatName(entry.name)}
+                    loading="lazy"
+                    className="h-9 w-9 object-contain [image-rendering:pixelated] transition-transform duration-200 group-hover:scale-125"
+                  />
+                  <span className="pointer-events-none absolute inset-x-0 bottom-0.5 text-center font-mono text-[7px] text-faint opacity-0 transition-opacity group-hover:opacity-100">
+                    {entry.id}
+                  </span>
+                </Link>
+              ))}
         </div>
       </section>
 
