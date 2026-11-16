@@ -4,11 +4,13 @@ updates:
     directory: /
     schedule:
       interval: weekly
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 3
     groups:
-      minor-and-patch:
+      all-dependencies:
+        patterns: ["*"]
         update-types: ["minor", "patch"]
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: monthly
+    open-pull-requests-limit: 2
