@@ -1,11 +1,12 @@
 interface MarqueeProps {
   items: string[]
+  reverse?: boolean
 }
 
-export default function Marquee({ items }: MarqueeProps) {
+export default function Marquee({ items, reverse = false }: MarqueeProps) {
   if (items.length === 0) return null
   const track = (
-    <div className="marquee-track" aria-hidden="true">
+    <div className="marquee-track" data-reverse={reverse} aria-hidden="true">
       {items.map((item) => (
         <span
           key={item}
