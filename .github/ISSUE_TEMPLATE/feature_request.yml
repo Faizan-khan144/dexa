@@ -1,0 +1,39 @@
+name: Feature request
+description: Suggest a feature or a polish pass for the dex.
+title: "[feat] "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What is the problem?
+      description: Describe the UX or data gap you hit.
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: What would you like to see?
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Dex browsing
+        - Species page
+        - Types and generations
+        - Favourites
+        - Motion and design
+        - Performance
+        - Accessibility
+        - Other
+    validations:
+      required: true
+  - type: checkboxes
+    id: contributions
+    attributes:
+      label: Contribution
+      options:
+        - label: I am happy to open a pull request for this.
