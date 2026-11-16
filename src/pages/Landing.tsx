@@ -1,6 +1,6 @@
 ﻿import { useEffect, useRef, useState, type CSSProperties, type MouseEvent } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowRight, ArrowUpRight, Dices, Heart, Info, Layers, Search, Shapes, Sparkles, Star } from 'lucide-react'
+import { ArrowRight, ArrowUpRight, BarChart3, Dices, Heart, Info, Layers, Search, Shapes, Sparkles, Star, Swords, Trophy } from 'lucide-react'
 import CountUp from '../components/CountUp'
 import GenTimeline from '../components/GenTimeline'
 import LegendarySpotlight from '../components/LegendarySpotlight'
@@ -77,7 +77,7 @@ export default function Landing() {
   const targetRef = useRef({ x: 0, y: 0 })
 
   useEffect(() => {
-    document.title = 'Dexa â€” every PokÃ©mon, one clean dex'
+    document.title = 'Dexa — every Pokémon, one clean dex'
     let alive = true
     getMany(FEATURED_IDS)
       .then((list) => {
@@ -188,12 +188,12 @@ export default function Landing() {
                 <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-accent" />
               </span>
               <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-muted">
-                1025 species Â· no account Â· free
+                1025 species · no account · free
               </span>
             </div>
             <h1 className="mx-auto mt-6 max-w-4xl font-display text-[3.1rem] font-extrabold leading-[0.92] tracking-[-0.055em] sm:text-[4.6rem] lg:text-[5.4rem]">
               <span className="block">
-                {['The', 'whole', 'PokÃ©dex.'].map((word, index) => (
+                {['The', 'whole', 'Pokédex.'].map((word, index) => (
                   <span
                     key={word}
                     className="word-in mr-[0.2em] inline-block"
@@ -216,13 +216,13 @@ export default function Landing() {
               </span>
             </h1>
             <p className="mx-auto mt-6 max-w-xl text-[15.5px] leading-relaxed text-muted">
-              Every species, every stat, every evolution â€” searchable by name or number and indexed locally, so it
+              Every species, every stat, every evolution — searchable by name or number and indexed locally, so it
               opens before you finish typing.
             </p>
           </Reveal>
 
           <Reveal delay={110} className="mt-8 w-full max-w-xl">
-            <SearchDock size="hero" placeholder="Try â€œgengarâ€, â€œ151â€, â€œdragapultâ€â€¦" />
+            <SearchDock size="hero" placeholder="Try “gengar”, “151”, “dragapult”…" />
             <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
               <span className="mono text-faint">Popular</span>
               {['pikachu', 'gengar', 'lucario', 'umbreon'].map((name) => (
@@ -242,7 +242,7 @@ export default function Landing() {
                 Roll a random species
               </Link>
             </div>
-            <p className="mono mt-4 text-faint">Free Â· fan-made Â· data from PokÃ©API Â· no sign-up</p>
+            <p className="mono mt-4 text-faint">Free · fan-made · data from PokéAPI · no sign-up</p>
           </Reveal>
 
           <Reveal delay={240} variant="scale" className="mt-12 w-full max-w-4xl">
@@ -271,7 +271,7 @@ export default function Landing() {
 
                   <div className="absolute left-4 top-4 flex flex-col items-start gap-1.5">
                     {rarity && <RarityBadge tier={rarity} />}
-                    <span className="mono text-faint">{specimen ? formatDexId(specimen.id) : '#â€”'}</span>
+                    <span className="mono text-faint">{specimen ? formatDexId(specimen.id) : '#—'}</span>
                   </div>
                 </div>
 
@@ -297,7 +297,7 @@ export default function Landing() {
                     key={specimen?.id}
                     className="panel-swap mt-3 font-display text-[2.2rem] font-extrabold leading-none tracking-[-0.045em] sm:text-[2.8rem]"
                   >
-                    {specimen ? formatName(specimen.name) : 'Loadingâ€¦'}
+                    {specimen ? formatName(specimen.name) : 'Loading…'}
                   </h2>
                   <div className="mt-2 flex flex-wrap gap-1.5">
                     {specimen?.types.map((entry) => (
@@ -307,13 +307,13 @@ export default function Landing() {
 
                   <div className="mt-4 flex flex-wrap gap-x-5 gap-y-1">
                     <span className="mono text-faint">
-                      height <span className="text-ink">{specimen ? `${(specimen.height / 10).toFixed(1)}m` : 'â€”'}</span>
+                      height <span className="text-ink">{specimen ? `${(specimen.height / 10).toFixed(1)}m` : '—'}</span>
                     </span>
                     <span className="mono text-faint">
-                      weight <span className="text-ink">{specimen ? `${(specimen.weight / 10).toFixed(1)}kg` : 'â€”'}</span>
+                      weight <span className="text-ink">{specimen ? `${(specimen.weight / 10).toFixed(1)}kg` : '—'}</span>
                     </span>
                     <span className="mono text-faint">
-                      base exp <span className="text-ink">{specimen?.base_experience ?? 'â€”'}</span>
+                      base exp <span className="text-ink">{specimen?.base_experience ?? '—'}</span>
                     </span>
                   </div>
 
@@ -359,7 +359,7 @@ export default function Landing() {
               href="#types"
               className="mono mt-8 inline-flex items-center gap-1.5 text-faint transition-colors hover:text-accent"
             >
-              Scroll the dex <span className="inline-block animate-bounce">â†“</span>
+              Scroll the dex <span className="inline-block animate-bounce">↓</span>
             </a>
           </Reveal>
         </div>
@@ -413,7 +413,7 @@ export default function Landing() {
               Legends, up close
             </h2>
             <p className="mt-2 max-w-lg text-[14px] leading-relaxed text-muted">
-              Six headline species, their tiers and their stat spread â€” no scrolling required.
+              Six headline species, their tiers and their stat spread — no scrolling required.
             </p>
           </div>
           <Link to="/dex?special=1" className="btn-quiet">
@@ -432,14 +432,17 @@ export default function Landing() {
             </h2>
           </div>
           <p className="max-w-xs text-[13px] leading-relaxed text-muted">
-            Five ways into the same archive, plus a random roll when you cannot decide.
+            Eight ways into the same archive, plus a random roll when you cannot decide.
           </p>
         </div>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {[
             { to: '/dex', icon: Search, title: 'The dex', text: 'All 1025 species, filterable.' },
             { to: '/types', icon: Shapes, title: 'Type atlas', text: 'Eighteen defensive charts.' },
             { to: '/generations', icon: Layers, title: 'Generations', text: 'Nine regions, one timeline.' },
+            { to: '/stats', icon: BarChart3, title: 'Stats', text: 'Records and spread by gen.' },
+            { to: '/compare', icon: Swords, title: 'Compare', text: 'Two species, side by side.' },
+            { to: '/quiz', icon: Trophy, title: 'Quiz', text: 'Name the silhouette.' },
             { to: '/favorites', icon: Heart, title: 'Favourites', text: 'Your local shelf of hearts.' },
             { to: '/about', icon: Info, title: 'About', text: 'How Dexa is put together.' },
           ].map((door) => (
@@ -488,7 +491,7 @@ export default function Landing() {
             {
               n: '03',
               title: 'One public API',
-              text: 'PokÃ©API for data, its sprite repo for artwork. No keys, no proxies, no hidden limits.',
+              text: 'PokéAPI for data, its sprite repo for artwork. No keys, no proxies, no hidden limits.',
             },
           ].map((item) => (
             <div key={item.n} className="px-1 py-8 md:px-7">
@@ -511,7 +514,7 @@ export default function Landing() {
               Every sprite, every dex number. Hover for the number, click for the dossier.
             </p>
           </div>
-          <span className="mono text-faint">{all.length > 0 ? `${all.length} species` : 'indexingâ€¦'}</span>
+          <span className="mono text-faint">{all.length > 0 ? `${all.length} species` : 'indexing…'}</span>
         </div>
         <div className="grid grid-cols-8 gap-1 sm:grid-cols-12 md:grid-cols-[repeat(16,minmax(0,1fr))]">
           {all.length === 0

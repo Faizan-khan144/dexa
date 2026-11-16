@@ -40,6 +40,15 @@ export default function SiteFooter() {
                 <Link to="/favorites" className="text-muted transition-colors hover:text-accent">
                   Favourites
                 </Link>
+                <Link to="/stats" className="text-muted transition-colors hover:text-accent">
+                  Stats
+                </Link>
+                <Link to="/compare" className="text-muted transition-colors hover:text-accent">
+                  Compare
+                </Link>
+                <Link to="/quiz" className="text-muted transition-colors hover:text-accent">
+                  Quiz
+                </Link>
                 <Link to="/about" className="text-muted transition-colors hover:text-accent">
                   About
                 </Link>
