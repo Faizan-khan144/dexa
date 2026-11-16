@@ -13,7 +13,7 @@ export default function Marquee({ items, reverse = false }: MarqueeProps) {
           className="whitespace-nowrap font-display text-2xl font-extrabold tracking-tight text-ink/15"
         >
           {item}
-          <span className="ml-9 text-accent/30">●</span>
+          <span className="ml-9 text-accent/30">&middot;</span>
         </span>
       ))}
     </div>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState, type CSSProperties, type MouseEvent } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight, ArrowUpRight, Sparkles, Star } from 'lucide-react'
 import CountUp from '../components/CountUp'
@@ -8,6 +8,7 @@ import Marquee from '../components/Marquee'
 import RarityBadge from '../components/RarityBadge'
 import Reveal from '../components/Reveal'
 import SearchDock from '../components/SearchDock'
+import SpotlightCard from '../components/SpotlightCard'
 import StatBar from '../components/StatBar'
 import TypeBadge from '../components/TypeBadge'
 import TypeExplorer from '../components/TypeExplorer'
@@ -71,7 +72,9 @@ export default function Landing() {
   const [featured, setFeatured] = useState<PokemonDetail[]>([])
   const [all, setAll] = useState<PokemonEntry[]>([])
   const [active, setActive] = useState(0)
-  const [scrollOffset, setScrollOffset] = useState(0)
+  const heroRef = useRef<HTMLElement>(null)
+  const frameRef = useRef(0)
+  const targetRef = useRef({ x: 0, y: 0 })
 
   useEffect(() => {
     document.title = 'Dexa — every Pokémon, one clean dex'
@@ -92,11 +95,37 @@ export default function Landing() {
   }, [])
 
   useEffect(() => {
-    const onScroll = () => setScrollOffset(Math.min(window.scrollY, 700))
+    let ticking = false
+    const onScroll = () => {
+      if (ticking) return
+      ticking = true
+      window.requestAnimationFrame(() => {
+        heroRef.current?.style.setProperty('--sy', String(Math.min(window.scrollY, 900)))
+        ticking = false
+      })
+    }
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
+
+  useEffect(() => () => window.cancelAnimationFrame(frameRef.current), [])
+
+  const handleHeroMove = (event: MouseEvent<HTMLElement>) => {
+    const node = heroRef.current
+    if (!node) return
+    const rect = node.getBoundingClientRect()
+    targetRef.current = {
+      x: (event.clientX - rect.left) / rect.width - 0.5,
+      y: (event.clientY - rect.top) / rect.height - 0.5,
+    }
+    if (frameRef.current) return
+    frameRef.current = window.requestAnimationFrame(() => {
+      node.style.setProperty('--px', targetRef.current.x.toFixed(3))
+      node.style.setProperty('--py', targetRef.current.y.toFixed(3))
+      frameRef.current = 0
+    })
+  }
 
   useEffect(() => {
     if (featured.length < 2) return
@@ -111,37 +140,47 @@ export default function Landing() {
 
   return (
     <div className="pop-in">
-      <section className="relative overflow-hidden pb-14 pt-6 sm:pb-20 sm:pt-10">
+      <section
+        ref={heroRef}
+        onMouseMove={handleHeroMove}
+        className="grain relative overflow-hidden pb-14 pt-6 sm:pb-20 sm:pt-10"
+        style={{ '--px': 0, '--py': 0, '--sy': 0 } as CSSProperties}
+      >
         <div className="hero-grid pointer-events-none absolute inset-0" aria-hidden="true" />
         <div
           className="pointer-events-none absolute inset-x-0 top-0 h-[560px]"
           style={{ background: 'radial-gradient(58% 70% at 50% 0%, rgba(225,29,60,0.14), transparent 72%)' }}
           aria-hidden="true"
         />
+        <div className="aurora aurora-a -left-24 top-6 h-[380px] w-[380px] bg-accent/15" aria-hidden="true" />
+        <div className="aurora aurora-b -right-24 top-28 h-[460px] w-[460px] bg-[#f7c948]/25" aria-hidden="true" />
 
-        <img
-          src={artworkUrl(25)}
-          alt=""
+        <div
+          className="pointer-events-none absolute left-[4%] top-[26%] hidden lg:block"
+          style={{ transform: 'translate3d(calc(var(--px, 0) * 24px), calc(var(--py, 0) * 24px - var(--sy, 0) * 0.05px), 0)' }}
           aria-hidden="true"
-          className="sprite-float pointer-events-none absolute left-[4%] top-[26%] hidden h-24 w-24 object-contain opacity-25 lg:block"
-          style={{ transform: `translateY(${-scrollOffset * 0.04}px)` }}
-        />
-        <img
-          src={artworkUrl(94)}
-          alt=""
+        >
+          <img src={artworkUrl(25)} alt="" className="sprite-float h-24 w-24 object-contain opacity-25" />
+        </div>
+        <div
+          className="pointer-events-none absolute right-[5%] top-[18%] hidden lg:block"
+          style={{ transform: 'translate3d(calc(var(--px, 0) * -34px), calc(var(--py, 0) * -34px - var(--sy, 0) * 0.08px), 0)' }}
           aria-hidden="true"
-          className="sprite-float pointer-events-none absolute right-[5%] top-[18%] hidden h-28 w-28 object-contain opacity-20 lg:block"
-          style={{ animationDelay: '-2s', transform: `translateY(${-scrollOffset * 0.06}px)` }}
-        />
-        <img
-          src={artworkUrl(6)}
-          alt=""
+        >
+          <img src={artworkUrl(94)} alt="" className="sprite-float h-28 w-28 object-contain opacity-20" style={{ animationDelay: '-2s' }} />
+        </div>
+        <div
+          className="pointer-events-none absolute bottom-[16%] left-[7%] hidden xl:block"
+          style={{ transform: 'translate3d(calc(var(--px, 0) * 16px), calc(var(--py, 0) * 16px - var(--sy, 0) * 0.03px), 0)' }}
           aria-hidden="true"
-          className="sprite-float pointer-events-none absolute bottom-[16%] left-[7%] hidden h-24 w-24 object-contain opacity-15 xl:block"
-          style={{ animationDelay: '-4s' }}
-        />
+        >
+          <img src={artworkUrl(6)} alt="" className="sprite-float h-24 w-24 object-contain opacity-15" style={{ animationDelay: '-4s' }} />
+        </div>
 
-        <div className="wrap relative flex flex-col items-center text-center">
+        <div
+          className="wrap relative flex flex-col items-center text-center"
+          style={{ transform: 'translate3d(0, calc(var(--sy, 0) * -0.025px), 0)' }}
+        >
           <Reveal>
             <div className="inline-flex items-center gap-2 rounded-full border border-line bg-surface/70 px-3.5 py-1.5 backdrop-blur">
               <span className="relative flex h-1.5 w-1.5">
@@ -153,9 +192,28 @@ export default function Landing() {
               </span>
             </div>
             <h1 className="mx-auto mt-6 max-w-4xl font-display text-[3.1rem] font-extrabold leading-[0.92] tracking-[-0.055em] sm:text-[4.6rem] lg:text-[5.4rem]">
-              The whole Pokédex.
-              <br />
-              <span className="text-gradient">One quiet tab.</span>
+              <span className="block">
+                {['The', 'whole', 'Pokédex.'].map((word, index) => (
+                  <span
+                    key={word}
+                    className="word-in mr-[0.2em] inline-block"
+                    style={{ '--d': `${140 + index * 90}ms` } as CSSProperties}
+                  >
+                    {word}
+                  </span>
+                ))}
+              </span>
+              <span className="mt-1 block">
+                {['One', 'quiet', 'tab.'].map((word, index) => (
+                  <span
+                    key={word}
+                    className="word-in text-gradient mr-[0.2em] inline-block"
+                    style={{ '--d': `${480 + index * 90}ms` } as CSSProperties}
+                  >
+                    {word}
+                  </span>
+                ))}
+              </span>
             </h1>
             <p className="mx-auto mt-6 max-w-xl text-[15.5px] leading-relaxed text-muted">
               Every species, every stat, every evolution — searchable by name or number and indexed locally, so it
@@ -188,7 +246,7 @@ export default function Landing() {
           </Reveal>
 
           <Reveal delay={240} variant="scale" className="mt-12 w-full max-w-4xl">
-            <div className="card overflow-hidden text-left">
+            <SpotlightCard className="card overflow-hidden text-left" tilt={2}>
               <div className="grid md:grid-cols-[1.02fr_0.98fr]">
                 <div
                   className="relative flex min-h-[320px] items-center justify-center overflow-hidden"
@@ -205,7 +263,7 @@ export default function Landing() {
                       key={specimen.id}
                       src={artworkUrl(specimen.id)}
                       alt={formatName(specimen.name)}
-                      className="sprite-float relative h-[240px] w-[240px] object-contain drop-shadow-[0_26px_28px_rgba(24,13,16,0.28)] sm:h-[270px] sm:w-[270px]"
+                      className="panel-swap sprite-float relative h-[240px] w-[240px] object-contain drop-shadow-[0_26px_28px_rgba(24,13,16,0.28)] sm:h-[270px] sm:w-[270px]"
                     />
                   ) : (
                     <div className="skeleton relative h-52 w-52 rounded-full" />
@@ -235,7 +293,10 @@ export default function Landing() {
                     </div>
                   </div>
 
-                  <h2 className="mt-3 font-display text-[2.2rem] font-extrabold leading-none tracking-[-0.045em] sm:text-[2.8rem]">
+                  <h2
+                    key={specimen?.id}
+                    className="panel-swap mt-3 font-display text-[2.2rem] font-extrabold leading-none tracking-[-0.045em] sm:text-[2.8rem]"
+                  >
                     {specimen ? formatName(specimen.name) : 'Loading…'}
                   </h2>
                   <div className="mt-2 flex flex-wrap gap-1.5">
@@ -275,7 +336,7 @@ export default function Landing() {
                   </div>
                 </div>
               </div>
-            </div>
+            </SpotlightCard>
           </Reveal>
 
           <Reveal delay={320} className="mt-10 w-full">
@@ -411,7 +472,7 @@ export default function Landing() {
                   key={entry.id}
                   to={`/pokemon/${entry.id}`}
                   title={`${formatDexId(entry.id)} ${formatName(entry.name)}`}
-                  className="group relative grid aspect-square place-items-center rounded-lg border border-transparent bg-bg/50 transition-all duration-200 hover:-translate-y-1 hover:border-accent/50 hover:bg-accent/10"
+                  className="wall-item group relative grid aspect-square place-items-center rounded-lg border border-transparent bg-bg/50 transition-all duration-200 hover:-translate-y-1 hover:border-accent/50 hover:bg-accent/10"
                 >
                   <img
                     src={spriteUrl(entry.id)}
@@ -431,7 +492,7 @@ export default function Landing() {
 
       <section className="wrap py-16">
         <Reveal>
-          <div className="card relative overflow-hidden px-6 py-12 text-center sm:px-12">
+          <SpotlightCard className="card relative overflow-hidden px-6 py-12 text-center sm:px-12" tilt={1.6}>
             <div className="pokeball-ring pointer-events-none absolute inset-0 opacity-70" />
             <div className="relative">
               <div className="kicker justify-center">Nine generations, one shelf</div>
@@ -456,7 +517,7 @@ export default function Landing() {
                 How Dexa is built <ArrowUpRight className="h-3 w-3" />
               </Link>
             </div>
-          </div>
+          </SpotlightCard>
         </Reveal>
       </section>
     </div>

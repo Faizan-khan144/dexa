@@ -1,3 +1,4 @@
+import { useRef, type PointerEvent } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowUpRight } from 'lucide-react'
 import { GENERATIONS, formatDexId, spriteUrl } from '../lib/pokedex'
@@ -27,8 +28,50 @@ const NOTES: Record<number, string> = {
 }
 
 export default function GenTimeline() {
+  const scroller = useRef<HTMLDivElement>(null)
+  const drag = useRef({ down: false, startX: 0, startLeft: 0, moved: false })
+
+  const handleDown = (event: PointerEvent<HTMLDivElement>) => {
+    const node = scroller.current
+    if (!node) return
+    if (event.pointerType === 'mouse' && event.button !== 0) return
+    drag.current = { down: true, startX: event.clientX, startLeft: node.scrollLeft, moved: false }
+    node.dataset.dragging = 'true'
+    node.setPointerCapture(event.pointerId)
+  }
+
+  const handleMove = (event: PointerEvent<HTMLDivElement>) => {
+    const node = scroller.current
+    if (!node || !drag.current.down) return
+    const delta = event.clientX - drag.current.startX
+    if (Math.abs(delta) > 5) drag.current.moved = true
+    node.scrollLeft = drag.current.startLeft - delta
+  }
+
+  const handleUp = (event: PointerEvent<HTMLDivElement>) => {
+    const node = scroller.current
+    if (!node) return
+    drag.current.down = false
+    delete node.dataset.dragging
+    if (node.hasPointerCapture(event.pointerId)) node.releasePointerCapture(event.pointerId)
+  }
+
   return (
-    <div className="-mx-6 overflow-x-auto px-6 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+    <div
+      ref={scroller}
+      onPointerDown={handleDown}
+      onPointerMove={handleMove}
+      onPointerUp={handleUp}
+      onPointerCancel={handleUp}
+      onClickCapture={(event) => {
+        if (drag.current.moved) {
+          event.preventDefault()
+          event.stopPropagation()
+          drag.current.moved = false
+        }
+      }}
+      className="drag-scroll edge-fade -mx-6 overflow-x-auto px-6 pb-2"
+    >
       <div className="flex snap-x snap-mandatory gap-3.5">
         {GENERATIONS.map((generation) => (
           <Link

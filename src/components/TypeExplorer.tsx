@@ -79,7 +79,8 @@ export default function TypeExplorer() {
       </div>
 
       <div
-        className="card relative overflow-hidden px-5 py-6 sm:px-7"
+        key={type}
+        className="card panel-swap relative overflow-hidden px-5 py-6 sm:px-7"
         style={{ background: `radial-gradient(110% 120% at 100% 0%, ${meta.a}24, var(--color-surface) 62%)` }}
       >
         <span className="dex-number pointer-events-none absolute -right-4 -top-6 select-none text-[7rem] sm:text-[9rem]">

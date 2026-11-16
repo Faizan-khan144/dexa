@@ -42,12 +42,17 @@ export default function LegendarySpotlight() {
             key={item.id}
             type="button"
             onClick={() => setActive(index)}
-            className={`flex items-center gap-3 rounded-xl border px-3 py-2.5 text-left transition-all ${
+            className={`relative flex items-center gap-3 overflow-hidden rounded-xl border px-3 py-2.5 text-left transition-all ${
               index === active
                 ? 'border-accent/40 bg-accent/5'
                 : 'border-line bg-surface hover:-translate-y-0.5 hover:border-line-strong'
             }`}
           >
+            <span
+              className={`absolute inset-y-2 left-0 w-[3px] rounded-full bg-accent transition-all duration-300 ${
+                index === active ? 'opacity-100' : 'opacity-0'
+              }`}
+            />
             <img
               src={artworkUrl(item.id)}
               alt=""
@@ -73,13 +78,14 @@ export default function LegendarySpotlight() {
               {String(entry.id).padStart(3, '0')}
             </span>
             <img
+              key={entry.id}
               src={artworkUrl(entry.id)}
               alt=""
-              className="sprite-float relative mx-auto mt-8 h-52 w-52 object-contain drop-shadow-[0_24px_26px_rgba(24,13,16,0.28)]"
+              className="panel-swap sprite-float relative mx-auto mt-8 h-52 w-52 object-contain drop-shadow-[0_24px_26px_rgba(24,13,16,0.28)]"
             />
           </div>
 
-          <div className="flex flex-col p-5 sm:p-6">
+          <div key={entry.id} className="panel-swap flex flex-col p-5 sm:p-6">
             <div className="flex flex-wrap items-center gap-1.5">
               <RarityBadge tier={rarity} />
               {detail?.types.map((type) => (
