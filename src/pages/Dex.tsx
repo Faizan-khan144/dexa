@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { SearchX, Sparkles } from 'lucide-react'
 import PokemonCard from '../components/PokemonCard'
@@ -16,7 +16,7 @@ import {
   type PokemonEntry,
 } from '../lib/pokedex'
 
-const PAGE = 16
+const PAGE = 36
 
 export default function Dex() {
   const [params, setParams] = useSearchParams()
@@ -30,6 +30,7 @@ export default function Dex() {
   const [details, setDetails] = useState<Record<number, PokemonDetail>>({})
   const [visible, setVisible] = useState(PAGE)
   const [error, setError] = useState('')
+  const sentinel = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
     document.title = 'The dex · Dexa'
@@ -114,6 +115,19 @@ export default function Dex() {
       alive = false
     }
   }, [missingKey])
+
+  useEffect(() => {
+    const node = sentinel.current
+    if (!node || visible >= ids.length) return
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) setVisible((value) => value + PAGE)
+      },
+      { rootMargin: '700px 0px' },
+    )
+    observer.observe(node)
+    return () => observer.disconnect()
+  }, [visible, ids.length])
 
   const update = (key: string, value?: string) => {
     const next = new URLSearchParams(params)
@@ -242,13 +256,20 @@ export default function Dex() {
           </div>
         )}
 
-        {visible < ids.length && (
-          <div className="mt-8 flex justify-center">
-            <button type="button" onClick={() => setVisible((value) => value + PAGE)} className="btn-ink">
-              Load {Math.min(PAGE, ids.length - visible)} more
-            </button>
-          </div>
-        )}
+        <div ref={sentinel} className="mt-10 flex justify-center">
+          {visible < ids.length ? (
+            <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.16em] text-faint">
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-accent" />
+              Loading more species · {visible} of {ids.length}
+            </div>
+          ) : (
+            ids.length > 0 && (
+              <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-faint">
+                End of the dex · {ids.length} shown
+              </div>
+            )
+          )}
+        </div>
       </div>
     </div>
   )
