@@ -51,7 +51,7 @@ export default function Types() {
                 to={`/types/${type}`}
                 className="card card-tilt group relative block overflow-hidden p-4"
                 style={{
-                  background: `radial-gradient(130% 100% at 0% 0%, ${meta.a}55, var(--color-surface) 72%)`,
+                  background: `radial-gradient(130% 100% at 0% 0%, ${meta.a}2e, var(--color-surface) 72%)`,
                 }}
               >
                 <span className="shine" aria-hidden="true" />

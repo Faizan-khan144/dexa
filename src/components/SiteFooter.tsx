@@ -28,19 +28,19 @@ export default function SiteFooter() {
             <div>
               <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-faint">The dex</div>
               <div className="mt-3 flex flex-col gap-2 text-[13.5px]">
-                <Link to="/dex" className="text-muted transition-colors hover:text-white">
+                <Link to="/dex" className="text-muted transition-colors hover:text-accent">
                   Browse all
                 </Link>
-                <Link to="/types" className="text-muted transition-colors hover:text-white">
+                <Link to="/types" className="text-muted transition-colors hover:text-accent">
                   Types
                 </Link>
-                <Link to="/generations" className="text-muted transition-colors hover:text-white">
+                <Link to="/generations" className="text-muted transition-colors hover:text-accent">
                   Generations
                 </Link>
-                <Link to="/favorites" className="text-muted transition-colors hover:text-white">
+                <Link to="/favorites" className="text-muted transition-colors hover:text-accent">
                   Favourites
                 </Link>
-                <Link to="/about" className="text-muted transition-colors hover:text-white">
+                <Link to="/about" className="text-muted transition-colors hover:text-accent">
                   About
                 </Link>
               </div>
@@ -52,7 +52,7 @@ export default function SiteFooter() {
                   href="https://pokeapi.co"
                   target="_blank"
                   rel="noreferrer"
-                  className="text-muted transition-colors hover:text-white"
+                  className="text-muted transition-colors hover:text-accent"
                 >
                   PokéAPI
                 </a>
@@ -60,7 +60,7 @@ export default function SiteFooter() {
                   href="https://github.com/PokeAPI/sprites"
                   target="_blank"
                   rel="noreferrer"
-                  className="text-muted transition-colors hover:text-white"
+                  className="text-muted transition-colors hover:text-accent"
                 >
                   Sprites
                 </a>
@@ -68,7 +68,7 @@ export default function SiteFooter() {
                   href="https://www.pokemon.com"
                   target="_blank"
                   rel="noreferrer"
-                  className="text-muted transition-colors hover:text-white"
+                  className="text-muted transition-colors hover:text-accent"
                 >
                   Pokémon.com
                 </a>
@@ -81,7 +81,7 @@ export default function SiteFooter() {
                   href="https://github.com/Faizan-khan144"
                   target="_blank"
                   rel="noreferrer"
-                  className="flex items-center gap-1.5 text-muted transition-colors hover:text-white"
+                  className="flex items-center gap-1.5 text-muted transition-colors hover:text-accent"
                 >
                   <Github className="h-3.5 w-3.5" /> Faizan Khan
                 </a>
@@ -93,7 +93,7 @@ export default function SiteFooter() {
           </div>
         </div>
 
-        <div className="mt-12 flex flex-col gap-3 border-t border-white/10 pt-5 text-[11.5px] text-faint sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-12 flex flex-col gap-3 border-t border-line pt-5 text-[11.5px] text-faint sm:flex-row sm:items-center sm:justify-between">
           <span>© {new Date().getFullYear()} Dexa. A fan project, not affiliated with Nintendo or Game Freak.</span>
           <span className="font-mono text-[10px] uppercase tracking-[0.16em]">data from PokéAPI</span>
         </div>

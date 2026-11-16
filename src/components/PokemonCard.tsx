@@ -45,7 +45,7 @@ export default function PokemonCard({ id, name, types }: PokemonCardProps) {
             className={`grid h-8 w-8 place-items-center rounded-full border transition-all ${
               favorite
                 ? 'border-accent bg-accent text-white'
-                : 'border-white/10 bg-black/30 text-ink/50 hover:border-accent hover:text-accent'
+                : 'border-white/70 bg-white/70 text-ink/40 hover:border-accent hover:text-accent'
             }`}
             aria-label={favorite ? `Remove ${name} from favourites` : `Add ${name} to favourites`}
           >
