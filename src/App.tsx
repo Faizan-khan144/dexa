@@ -4,13 +4,16 @@ import ScrollProgress from './components/ScrollProgress'
 import SiteFooter from './components/SiteFooter'
 import SiteHeader from './components/SiteHeader'
 import About from './pages/About'
+import Compare from './pages/Compare'
 import Detail from './pages/Detail'
 import Dex from './pages/Dex'
 import Favorites from './pages/Favorites'
 import Generations from './pages/Generations'
 import Landing from './pages/Landing'
 import NotFound from './pages/NotFound'
+import Quiz from './pages/Quiz'
 import Random from './pages/Random'
+import Stats from './pages/Stats'
 import TypeDetail from './pages/TypeDetail'
 import Types from './pages/Types'
 
@@ -43,6 +46,9 @@ export default function App() {
           <Route path="/types/:name" element={<TypeDetail />} />
           <Route path="/generations" element={<Generations />} />
           <Route path="/favorites" element={<Favorites />} />
+          <Route path="/stats" element={<Stats />} />
+          <Route path="/compare" element={<Compare />} />
+          <Route path="/quiz" element={<Quiz />} />
           <Route path="/about" element={<About />} />
           <Route path="/random" element={<Random />} />
           <Route path="*" element={<NotFound />} />
