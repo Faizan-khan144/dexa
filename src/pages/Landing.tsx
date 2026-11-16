@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowRight, ArrowUpRight, Search, Sparkles, Star } from 'lucide-react'
+import { ArrowRight, ArrowUpRight, Sparkles, Star } from 'lucide-react'
 import CountUp from '../components/CountUp'
+import HeroPreview from '../components/HeroPreview'
 import Marquee from '../components/Marquee'
 import PokemonCard from '../components/PokemonCard'
 import RarityBadge from '../components/RarityBadge'
@@ -9,6 +10,8 @@ import Reveal from '../components/Reveal'
 import SearchDock from '../components/SearchDock'
 import {
   GENERATIONS,
+  LEGENDARY_IDS,
+  MYTHICAL_IDS,
   TYPE_META,
   TYPE_ORDER,
   artworkUrl,
@@ -27,8 +30,6 @@ const STARTERS = [
   { id: 7, name: 'squirtle', types: ['water'] },
   { id: 25, name: 'pikachu', types: ['electric'] },
 ]
-
-const FEATURED_IDS = [6, 448, 133, 150, 384, 94]
 
 const LEGENDARY_SHOWCASE = [150, 249, 384, 483, 888, 1008]
 
@@ -83,7 +84,6 @@ const ROLLING_NAMES = [
 ]
 
 export default function Landing() {
-  const [featured, setFeatured] = useState<PokemonDetail[]>([])
   const [legendaries, setLegendaries] = useState<PokemonDetail[]>([])
   const [all, setAll] = useState<PokemonEntry[]>([])
   const [scrollOffset, setScrollOffset] = useState(0)
@@ -91,11 +91,6 @@ export default function Landing() {
   useEffect(() => {
     document.title = 'Dexa — every Pokémon, one clean dex'
     let alive = true
-    getMany(FEATURED_IDS)
-      .then((list) => {
-        if (alive) setFeatured(list)
-      })
-      .catch(() => undefined)
     getMany(LEGENDARY_SHOWCASE)
       .then((list) => {
         if (alive) setLegendaries(list)
@@ -118,40 +113,72 @@ export default function Landing() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  const preview = featured[0]
-  const previewStats = preview ? preview.stats.slice(0, 3) : []
-  const previewTotal = previewStats.reduce((total, stat) => total + stat.base_stat, 0)
+  const specialCount = LEGENDARY_IDS.size + MYTHICAL_IDS.size
 
   return (
     <div className="pop-in">
-      <section className="wrap grid gap-10 pb-12 pt-10 lg:grid-cols-[1.08fr_0.92fr] lg:items-center lg:pb-16 lg:pt-16">
-        <div className="max-w-xl">
+      <section className="relative overflow-hidden pb-14 pt-6 sm:pb-20 sm:pt-10">
+        <div className="hero-grid pointer-events-none absolute inset-0" aria-hidden="true" />
+        <div
+          className="pointer-events-none absolute inset-x-0 top-0 h-[560px]"
+          style={{ background: 'radial-gradient(58% 70% at 50% 0%, rgba(245,37,63,0.22), transparent 72%)' }}
+          aria-hidden="true"
+        />
+
+        <img
+          src={artworkUrl(25)}
+          alt=""
+          aria-hidden="true"
+          className="sprite-float pointer-events-none absolute left-[4%] top-[24%] hidden h-24 w-24 object-contain opacity-40 lg:block"
+          style={{ transform: `translateY(${-scrollOffset * 0.04}px)` }}
+        />
+        <img
+          src={artworkUrl(94)}
+          alt=""
+          aria-hidden="true"
+          className="sprite-float pointer-events-none absolute right-[5%] top-[16%] hidden h-28 w-28 object-contain opacity-35 lg:block"
+          style={{ animationDelay: '-2s', transform: `translateY(${-scrollOffset * 0.06}px)` }}
+        />
+        <img
+          src={artworkUrl(6)}
+          alt=""
+          aria-hidden="true"
+          className="sprite-float pointer-events-none absolute bottom-[18%] left-[8%] hidden h-24 w-24 object-contain opacity-25 xl:block"
+          style={{ animationDelay: '-4s' }}
+        />
+        <img
+          src={artworkUrl(150)}
+          alt=""
+          aria-hidden="true"
+          className="sprite-float pointer-events-none absolute bottom-[24%] right-[9%] hidden h-24 w-24 object-contain opacity-25 xl:block"
+          style={{ animationDelay: '-1s' }}
+        />
+
+        <div className="wrap relative flex flex-col items-center text-center">
           <Reveal>
-            <div className="inline-flex items-center gap-2 rounded-full border border-line bg-surface/70 px-3 py-1.5">
+            <div className="inline-flex items-center gap-2 rounded-full border border-line bg-surface/70 px-3.5 py-1.5 backdrop-blur">
               <span className="relative flex h-1.5 w-1.5">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-60" />
                 <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-accent" />
               </span>
               <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-muted">
-                All 1025 species · no account
+                1025 species · no account · free
               </span>
             </div>
-            <h1 className="mt-5 font-display text-[3rem] font-extrabold leading-[0.94] tracking-[-0.05em] sm:text-[4.35rem]">
-              Every Pokémon.
+            <h1 className="mx-auto mt-6 max-w-4xl font-display text-[3.1rem] font-extrabold leading-[0.92] tracking-[-0.055em] sm:text-[4.6rem] lg:text-[5.4rem]">
+              The whole Pokédex.
               <br />
-              One quiet <span className="text-gradient">dex.</span>
+              <span className="text-gradient">One quiet tab.</span>
             </h1>
-            <p className="mt-5 max-w-lg text-[15.5px] leading-relaxed text-muted">
-              Types, stats, evolution lines and cries for every species — indexed locally, searchable by name or
-              number, and ready before the conversation moves on.
+            <p className="mx-auto mt-6 max-w-xl text-[15.5px] leading-relaxed text-muted">
+              Every species, every stat, every evolution — searchable by name or number and indexed locally, so it
+              opens before you finish typing.
             </p>
           </Reveal>
 
-          <Reveal delay={100}>
-            <div className="mt-7">
-              <SearchDock size="hero" placeholder="Try “gengar”, “151”, “dragapult”…" />
-            </div>
-            <div className="mt-3 flex flex-wrap items-center gap-2">
+          <Reveal delay={110} className="mt-8 w-full max-w-xl">
+            <SearchDock size="hero" placeholder="Try “gengar”, “151”, “dragapult”…" />
+            <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
               <span className="mono text-faint">Popular</span>
               {['pikachu', 'gengar', 'lucario', 'umbreon'].map((name) => (
                 <Link key={name} to={`/dex?q=${name}`} className="chip">
@@ -161,137 +188,46 @@ export default function Landing() {
             </div>
           </Reveal>
 
-          <Reveal delay={180}>
-            <div className="mt-7 flex flex-wrap items-center gap-3">
+          <Reveal delay={180} className="mt-7">
+            <div className="flex flex-wrap items-center justify-center gap-3">
               <Link to="/dex" className="btn-accent">
                 Open the dex <ArrowRight className="h-3.5 w-3.5" />
               </Link>
               <Link to="/random" className="btn-quiet">
-                Surprise me
+                Roll a random species
               </Link>
             </div>
-            <p className="mono mt-4 text-faint">Free · fan-made · data from PokéAPI</p>
-            <div className="mt-7 grid max-w-md grid-cols-3 gap-3 border-t border-line pt-5">
+            <p className="mono mt-4 text-faint">Free · fan-made · data from PokéAPI · no sign-up</p>
+          </Reveal>
+
+          <Reveal delay={240} variant="scale" className="mt-12 w-full max-w-3xl">
+            <HeroPreview />
+          </Reveal>
+
+          <Reveal delay={320} className="mt-10 w-full">
+            <div className="mx-auto grid max-w-2xl grid-cols-2 gap-y-5 border-y border-line py-5 sm:grid-cols-4">
               {[
                 { value: 1025, label: 'species' },
                 { value: 18, label: 'types' },
                 { value: 9, label: 'generations' },
+                { value: specialCount, label: 'legendary + mythical' },
               ].map((stat) => (
-                <div key={stat.label}>
-                  <div className="font-display text-xl font-extrabold tracking-tight">
+                <div key={stat.label} className="px-2">
+                  <div className="font-display text-2xl font-extrabold tracking-tight">
                     <CountUp value={stat.value} />
                   </div>
                   <div className="mono mt-0.5 text-[9px] uppercase tracking-[0.1em] text-faint">{stat.label}</div>
                 </div>
               ))}
             </div>
+            <a
+              href="#starters"
+              className="mono mt-8 inline-flex items-center gap-1.5 text-faint transition-colors hover:text-accent"
+            >
+              Scroll the dex <span className="inline-block animate-bounce">↓</span>
+            </a>
           </Reveal>
         </div>
-
-        <Reveal variant="right" delay={140}>
-          <div className="relative" style={{ transform: `translateY(${-scrollOffset * 0.02}px)` }}>
-            <div className="absolute -inset-6 rounded-[3rem] bg-gradient-to-br from-accent/25 via-transparent to-sun/10 blur-2xl" />
-            <div className="card relative overflow-hidden">
-              <div className="flex items-center gap-2 border-b border-line bg-surface2/60 px-4 py-2.5">
-                <span className="flex gap-1.5">
-                  <span className="h-2 w-2 rounded-full bg-accent/70" />
-                  <span className="h-2 w-2 rounded-full bg-sun/60" />
-                  <span className="h-2 w-2 rounded-full bg-line-strong" />
-                </span>
-                <span className="mx-auto flex items-center gap-1.5 rounded-full border border-line bg-bg/60 px-3 py-1 font-mono text-[9px] text-faint">
-                  dexa.app/dex
-                </span>
-                <span className="mono text-[9px] text-faint">live</span>
-              </div>
-
-              <div className="p-4">
-                <div className="flex items-center gap-2 rounded-full border border-line-strong bg-bg/60 px-3 py-2.5">
-                  <Search className="h-3.5 w-3.5 text-faint" />
-                  <span className="flex-1 text-[12px] text-faint">Search 1025 species…</span>
-                  <kbd className="rounded border border-line bg-surface px-1.5 py-0.5 font-mono text-[9px] text-faint">
-                    /
-                  </kbd>
-                </div>
-
-                <div className="mt-2.5 flex flex-wrap gap-1.5">
-                  {['fire', 'water', 'grass', 'psychic'].map((type, index) => (
-                    <span key={type} className="chip" data-active={index === 0}>
-                      {type}
-                    </span>
-                  ))}
-                  <span className="chip">+14</span>
-                </div>
-
-                <div className="mt-3 grid grid-cols-3 gap-2">
-                  {featured.length > 0
-                    ? featured.slice(0, 3).map((item) => (
-                        <Link
-                          key={item.id}
-                          to={`/pokemon/${item.id}`}
-                          className="group rounded-xl border border-line bg-bg/40 p-2 text-center transition-colors hover:border-accent/50"
-                        >
-                          <img
-                            src={artworkUrl(item.id)}
-                            alt={formatName(item.name)}
-                            className="mx-auto h-[72px] w-[72px] object-contain drop-shadow-[0_10px_12px_rgba(0,0,0,0.5)] transition-transform group-hover:-translate-y-1"
-                          />
-                          <div className="mt-1 truncate font-display text-[12px] font-bold">
-                            {formatName(item.name)}
-                          </div>
-                          <div className="mono text-[8px] text-faint">{formatDexId(item.id)}</div>
-                        </Link>
-                      ))
-                    : Array.from({ length: 3 }).map((_, index) => (
-                        <div key={index} className="skeleton h-[118px] rounded-xl" />
-                      ))}
-                </div>
-
-                <div className="mt-3 rounded-xl border border-line bg-bg/40 p-3">
-                  <div className="flex items-center justify-between">
-                    <span className="mono text-[9px] uppercase tracking-[0.12em] text-faint">Base stats</span>
-                    <span className="mono text-[9px] text-faint">total {previewTotal || '—'}</span>
-                  </div>
-                  <div className="mt-2.5 space-y-1.5">
-                    {(previewStats.length > 0 ? previewStats : [{ base_stat: 60 }]).map((stat, index) => (
-                      <div key={index} className="h-1.5 overflow-hidden rounded-full bg-surface2">
-                        <div
-                          className="stat-fill"
-                          data-tone={index === 0 ? 'high' : 'mid'}
-                          style={{ width: `${Math.min(100, (stat.base_stat / 180) * 100)}%` }}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between border-t border-line px-4 py-2.5">
-                <span className="mono text-[9px] text-faint">1025 species · 18 types · 9 generations</span>
-                <span className="mono flex items-center gap-1 text-[9px] text-faint">
-                  <span className="h-1 w-1 rounded-full bg-accent" /> live
-                </span>
-              </div>
-            </div>
-
-            <div className="absolute -left-4 top-[38%] hidden sm:block">
-              <div className="card !rounded-2xl px-3 py-2 shadow-[0_20px_40px_-24px_rgba(0,0,0,0.9)]">
-                <div className="mono text-[8px] uppercase tracking-[0.12em] text-faint">Rarity</div>
-                <div className="mt-1">
-                  <RarityBadge tier="Legendary" />
-                </div>
-              </div>
-            </div>
-
-            <div className="absolute -right-3 bottom-24 hidden sm:block">
-              <div className="card !rounded-2xl px-3 py-2 shadow-[0_20px_40px_-24px_rgba(0,0,0,0.9)]">
-                <div className="mono text-[8px] uppercase tracking-[0.12em] text-faint">Indexed</div>
-                <div className="font-display text-lg font-extrabold leading-tight">
-                  <CountUp value={1025} />
-                </div>
-              </div>
-            </div>
-          </div>
-        </Reveal>
       </section>
 
       <section className="border-y border-line bg-surface/40">
@@ -309,7 +245,7 @@ export default function Landing() {
 
       <Marquee items={ROLLING_NAMES} />
 
-      <section className="wrap py-14">
+      <section id="starters" className="wrap py-14">
         <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
           <div>
             <div className="kicker">Pick a side</div>
