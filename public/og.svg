@@ -1,16 +1,21 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#f4f1ea"/>
-      <stop offset="1" stop-color="#efece3"/>
+      <stop offset="0" stop-color="#0a0708"/>
+      <stop offset="1" stop-color="#1b0a0e"/>
     </linearGradient>
-    <linearGradient id="ball" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#e3354d"/>
-      <stop offset="1" stop-color="#f7c948"/>
+    <linearGradient id="red" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ff3350"/>
+      <stop offset="1" stop-color="#8f0b1e"/>
     </linearGradient>
+    <radialGradient id="glow" cx="0.8" cy="0" r="0.9">
+      <stop offset="0" stop-color="#f5253f" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#f5253f" stop-opacity="0"/>
+    </radialGradient>
   </defs>
   <rect width="1200" height="630" fill="url(#bg)"/>
-  <g fill="none" stroke="#d2c9b8" stroke-width="1.5" opacity="0.6">
+  <rect width="1200" height="630" fill="url(#glow)"/>
+  <g fill="none" stroke="#3d2f32" stroke-width="1.5" opacity="0.8">
     <circle cx="1010" cy="120" r="210"/>
     <circle cx="1010" cy="120" r="150"/>
     <circle cx="1010" cy="120" r="90"/>
@@ -18,27 +23,31 @@
     <circle cx="140" cy="560" r="120"/>
   </g>
   <g transform="translate(96 118)">
-    <circle cx="34" cy="34" r="33" fill="#fffdf8" stroke="#14121a" stroke-width="6"/>
-    <path d="M1 34a33 33 0 0 1 66 0z" fill="url(#ball)"/>
-    <circle cx="34" cy="34" r="12" fill="#fffdf8" stroke="#14121a" stroke-width="6"/>
+    <rect x="0" y="0" width="68" height="68" rx="22" fill="url(#red)"/>
+    <circle cx="34" cy="36" r="18" fill="#0a0708"/>
+    <circle cx="34" cy="36" r="18" fill="none" stroke="#ffffff" stroke-opacity="0.9" stroke-width="4"/>
+    <circle cx="34" cy="36" r="7" fill="#ffffff"/>
+    <circle cx="34" cy="36" r="3" fill="#f5253f"/>
+    <path d="M13 19h9" stroke="#ffffff" stroke-width="4" stroke-linecap="round"/>
   </g>
-  <text x="176" y="170" font-family="Segoe UI, Arial, sans-serif" font-size="64" font-weight="800" fill="#14121a" letter-spacing="-3">dexa<tspan fill="#e3354d">.</tspan></text>
-  <text x="96" y="300" font-family="Segoe UI, Arial, sans-serif" font-size="86" font-weight="800" fill="#14121a" letter-spacing="-4">Every Pokemon,</text>
-  <text x="96" y="392" font-family="Segoe UI, Arial, sans-serif" font-size="86" font-weight="800" fill="#14121a" letter-spacing="-4">one clean <tspan fill="#e3354d">dex.</tspan></text>
-  <text x="96" y="460" font-family="Consolas, monospace" font-size="20" fill="#5f5b6b" letter-spacing="2">1025 SPECIES · 18 TYPES · 9 GENERATIONS · RARITY · CRIES</text>
-  <g font-family="Consolas, monospace" font-size="15" fill="#14121a">
+  <text x="186" y="172" font-family="Segoe UI, Arial, sans-serif" font-size="64" font-weight="800" fill="#f6eeee" letter-spacing="-3">dexa<tspan fill="#f5253f">.</tspan></text>
+  <text x="96" y="302" font-family="Segoe UI, Arial, sans-serif" font-size="86" font-weight="800" fill="#f6eeee" letter-spacing="-4">Every Pokemon,</text>
+  <text x="96" y="394" font-family="Segoe UI, Arial, sans-serif" font-size="86" font-weight="800" fill="#f5253f" letter-spacing="-4">one clean dex.</text>
+  <text x="96" y="462" font-family="Consolas, monospace" font-size="20" fill="#b3a3a5" letter-spacing="2">1025 SPECIES · 18 TYPES · 9 GENERATIONS · RARITY · CRIES</text>
+  <g font-family="Consolas, monospace" font-size="15">
     <rect x="96" y="506" width="120" height="38" rx="19" fill="#f7c948"/>
     <text x="128" y="531" fill="#1b1206">LEGENDARY</text>
     <rect x="228" y="506" width="112" height="38" rx="19" fill="#7c3aed"/>
     <text x="256" y="531" fill="#fff">MYTHICAL</text>
-    <rect x="352" y="506" width="86" height="38" rx="19" fill="#2f6fed"/>
+    <rect x="352" y="506" width="86" height="38" rx="19" fill="#f5253f"/>
     <text x="375" y="531" fill="#fff">RARE</text>
   </g>
-  <g transform="translate(900 330)">
-    <circle r="190" fill="#ffffff" opacity="0.55"/>
-    <circle r="150" fill="none" stroke="#e3354d" stroke-width="2" opacity="0.35"/>
-    <circle r="112" fill="#f4f1ea" stroke="#e3354d" stroke-width="2" opacity="0.45"/>
-    <path d="M-70 0h140M0 -70v140" stroke="#14121a" stroke-width="3" opacity="0.18"/>
-    <text y="18" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="118" font-weight="800" fill="#14121a" opacity="0.14">025</text>
+  <g transform="translate(920 330)">
+    <circle r="190" fill="#141011"/>
+    <circle r="190" fill="none" stroke="#3d2f32" stroke-width="2"/>
+    <circle r="150" fill="none" stroke="#f5253f" stroke-width="2" opacity="0.45"/>
+    <circle r="112" fill="#0a0708" stroke="#f5253f" stroke-width="2" opacity="0.6"/>
+    <path d="M-70 0h140M0 -70v140" stroke="#f6eeee" stroke-width="2" opacity="0.12"/>
+    <text y="22" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="118" font-weight="800" fill="#f6eeee" opacity="0.18">025</text>
   </g>
 </svg>

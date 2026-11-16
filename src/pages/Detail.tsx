@@ -163,7 +163,7 @@ export default function Detail() {
         <Reveal>
           <div
             className="card pokeball-ring relative overflow-hidden p-6"
-            style={{ background: `radial-gradient(120% 90% at 50% 0%, ${meta.a}22, #fffdf8 60%)` }}
+            style={{ background: `radial-gradient(120% 90% at 50% 0%, ${meta.a}44, var(--color-surface) 60%)` }}
           >
             <span className="dex-number pointer-events-none absolute -top-2 left-1/2 -translate-x-1/2 select-none text-[8.5rem] sm:text-[11rem]">
               {String(pokemon.id).padStart(3, '0')}
