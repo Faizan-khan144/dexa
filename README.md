@@ -53,7 +53,6 @@ npm install
 npm run dev
 ```
 
-Open `http://localhost:5173`.
 
 > On npm 12+, install scripts are blocked by default. If esbuild fails to start, run `npm install-scripts approve esbuild` and then `npm rebuild esbuild`.
 
