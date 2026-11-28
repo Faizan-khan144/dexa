@@ -56,6 +56,13 @@ npm run dev
 
 > On npm 12+, install scripts are blocked by default. If esbuild fails to start, run `npm install-scripts approve esbuild` and then `npm rebuild esbuild`.
 
+## Usage
+
+1. Open the app — the full dex loads on the home screen.
+2. Search by name or dex number, or filter by type, generation and legendary status. Filters are written to the URL, so a filtered view can be shared.
+3. Open a species for artwork, flavour text, abilities, animated stats and the defensive type chart.
+4. Tap the cry button to hear it, and heart a species to keep it on your shelf. The shelf lives in `localStorage`, so it survives a refresh without an account.
+
 ## Scripts
 
 | Command | What it does |
